@@ -8,12 +8,6 @@ class App extends Component {
   constructor() {
     super();
 
-    this.content = axios.get('http://localhost:3000/data/ch08.txt', [{responseType: 'text'}])
-    .then(function(response) {
-      console.log(response.data);
-      return response.data;
-    });
-
     this.annotations = axios.get('http://localhost:3000/data/ch08.txt.xml', [{responseType: 'text'}])
     .then(function(response) {
       return response.data;
@@ -21,8 +15,8 @@ class App extends Component {
 
     this.state = {
       contentChapter: 8,
-      content: this.content,
-      annotations: this.annotations,
+      content: null,
+      annotations: null,
       categories: ['PERSON', 'LOCATION', 'ORGANIZATION'],
       annotationsSaved: false
     }
@@ -32,10 +26,15 @@ class App extends Component {
   };
 
   componentDidMount() {
-    axios.get('http://localhost:3000/data/ch08.txt.xml')
-    .then(function(response) {
-      console.log(response.data);
-    });
+    //get content
+    axios.get('http://localhost:3000/data/ch08.txt', [{responseType: 'text'}])
+    .then(res => this.setState({ content: res.data }))
+    .catch(err => console.log(err));
+
+    //get annotations
+    axios.get('http://localhost:3000/data/ch08.txt.xml', [{responseType: 'text'}])
+    .then(res => this.setState({ annotations: res.data }))
+    .catch(err => console.log(err));
 	}
 
   getContent(chapter) {
@@ -62,7 +61,7 @@ class App extends Component {
 
   render() {
     return (
-      <div className="annotations-app container">
+      <div id="app-container" className="annotations-app container">
         <ContentsList categories={this.state.categories}></ContentsList>
         <Contents content={this.state.content}></Contents>
       </div>
