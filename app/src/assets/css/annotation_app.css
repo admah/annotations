@@ -1,0 +1,32 @@
+body {
+	padding: 40px 0;
+}
+
+#app-container {
+	display:flex; 
+}
+
+.contents-list {
+	width: 30%;
+    margin-right: 15px;
+    border: 1px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.contents {
+	width: 65%;
+	white-space:pre
+}
+
+.person {
+	background: #eafffa;
+}
+
+.location {
+	background: #d8f5ff;
+}
+
+.organization {
+	background: #ffe9f5;
+}

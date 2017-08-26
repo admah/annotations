@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 
 class Contents extends Component {
 	render() {
-	  return (
-		<div className="contents">
-		  
-		</div>
-	  );
+		console.log(this.props.content);
+		return (
+			<div className="contents">
+			
+			</div>
+		);
 	}
   }
   
