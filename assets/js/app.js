@@ -41,6 +41,35 @@ document.addEventListener('DOMContentLoaded', function(event) {
 		});
 	}
 
+	function insertAnnotations(annotations) {
+
+	}
+
+	function removeAnnotations(annotations) {
+		
+	}
+
+	function updateAnnotations(annotations) {
+
+	}
+
+	function displayAnnotations(annotations) {
+		var contentContainer = document.querySelector('.contents').innerHTML;
+		var charSeq, span, category, start;
+		var terms = [];
+		console.log(contentContainer.replace(/alice/g, 'bob'));
+		for(annotation of annotations){
+			category = annotation.getAttribute('category').toLowerCase();
+			charSeq = annotation.getElementsByTagName('charseq');
+			charSeqLength = charSeq[0]['textContent'].length;
+
+			terms.push(contentContainer.substr(charSeq[0].getAttribute('START'), charSeqLength), category);
+			contentContainer.replace(/alice/g, 'bob');
+		};
+		console.log(terms);
+	}
+
+	// Helper function to make sure chapter has leading zeroes.
 	function sanitizeChapter(chapter) {
 		var contentChapter = chapter ? chapter.toString() : '';
 		
@@ -49,17 +78,5 @@ document.addEventListener('DOMContentLoaded', function(event) {
 		}
 
 		return contentChapter;
-	}
-
-	function displayAnnotations(annotations) {
-		var contentContainer = document.querySelector('.contents').innerHTML;
-		var charSeq, span, category;
-
-		for(annotation of annotations){
-			category = annotation.getAttribute('category')
-			charSeq = annotation.getElementsByTagName('charseq');
-			charSeqLength = charSeq[0]['textContent'].length;
-			console.log(contentContainer.substr(charSeq[0].getAttribute('START'), charSeqLength), category);
-		};
 	}
 });
