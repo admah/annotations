@@ -4,6 +4,24 @@ document.addEventListener('DOMContentLoaded', function(event) {
 		var node = [];
 
 		return {
+			getContent: function( chapter ) {
+				var contentChapter = sanitizeChapter(chapter);
+				var contentRequest = new Request(location.origin + '/annotations/assets/data/ch'+ contentChapter +'.txt', {
+					headers: new Headers({
+						'Content-Type': 'text/plain'
+					})
+				});
+		
+				fetch(contentRequest).then(function(response) {
+					return response.text();
+				}).then(function(text) {
+					var contentContainer = document.querySelector('.contents');
+					contentContainer.innerHTML = text;
+				}).then(function(){
+					annotationHandler.getAnnotations(chapter);
+				});
+			},
+
 			getAnnotations: function(chapter) {
 				var contentChapter = sanitizeChapter(chapter);
 				var contentRequest = new Request(location.origin + '/annotations/assets/data/ch'+ contentChapter +'.txt.xml', {
@@ -73,31 +91,9 @@ document.addEventListener('DOMContentLoaded', function(event) {
 			removeAnnotations: function( values ){
 				return; //annotations.filter()
 			},
-
-			getContent: function( chapter ) {
-				var contentChapter = sanitizeChapter(chapter);
-				var contentRequest = new Request(location.origin + '/annotations/assets/data/ch'+ contentChapter +'.txt', {
-					headers: new Headers({
-						'Content-Type': 'text/plain'
-					})
-				});
-		
-				fetch(contentRequest).then(function(response) {
-					return response.text();
-				}).then(function(text) {
-					var contentContainer = document.querySelector('.contents');
-					contentContainer.innerHTML = text;
-				}).then(function(){
-					annotationHandler.getAnnotations(chapter);
-				});
-			}
 		}
 	})();
-	
-	//Get initial content and annotations
-	annotationHandler.getContent(8);
 
-		
 	// Helper function to make sure chapter has leading zeroes.
 	function sanitizeChapter(chapter) {
 		var contentChapter = chapter ? chapter.toString() : '';
@@ -108,4 +104,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
 		return contentChapter;
 	}
+	
+	//Get initial content and annotations
+	annotationHandler.getContent(8);
 });
