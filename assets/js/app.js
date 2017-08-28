@@ -22,11 +22,12 @@ document.addEventListener('DOMContentLoaded', function(event) {
 						
 						while (annotationNode) {
 							var charseq = annotationNode.getElementsByTagName('charseq');
-							var cat     = annotationNode.getAttribute('category');
+							var cat     = annotationNode.getAttribute('category').toLowerCase();
 
 							node = {
-								'category': cat,
-								'text'    : '<span class="' + cat + '-annotation">' + annotationNode.textContent + '</span>',
+								'category'  : cat,
+								'text'      : annotationNode.textContent,
+								'textLength': annotationNode.textContent.length,
 								'charseq'   : annotationNode.getElementsByTagName('charseq')
 							}
 							annotations.add(node)
@@ -48,17 +49,18 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
 			displayAnnotations: function(annotations) {
 				var contentContainer = document.querySelector('.contents').innerHTML;
-				var newContent = contentContainer;
-				var start, end;
+				var newContent, start, end;
 
 				annotations.forEach(function(annotation) {
 					start = annotation.charseq[0].getAttribute('START');
 					end = annotation.charseq[0].getAttribute('END');
-
-					contentContainer.innerHTML = newContent.substring(0, start) + annotation.text + newContent.substring(end, annotation.text.length);
+					//console.log(newContent.substring(start, annotation.textLength));
+					newContent = contentContainer.replace(annotation.text, '<span>'+ annotation.text + '</span>');
 				});
 
 				console.log(newContent);
+
+				document.querySelector('.contents').innerHTML = newContent;
 
 				/*console.log(contentContainer.replace(/alice/g, 'bob'));
 				for(annotation of annotations){
@@ -98,14 +100,16 @@ document.addEventListener('DOMContentLoaded', function(event) {
 				}).then(function(text) {
 					var contentContainer = document.querySelector('.contents');
 					contentContainer.innerHTML = text;
+				}).then(function(){
+					annotationHandler.getAnnotations(chapter);
 				});
 			}
 		}
 	})();
 	
 	//Get initial content and annotations
-	annotationHandler.getContent(8)
-	annotationHandler.getAnnotations(8);
+	annotationHandler.getContent(8);
+	//annotationHandler.getAnnotations(8);
 		
 	// Helper function to make sure chapter has leading zeroes.
 	function sanitizeChapter(chapter) {
@@ -117,43 +121,4 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
 		return contentChapter;
 	}
-
-	// Changes XML to JSON
-	function xmlToJson(xml) {
-		
-		// Create the return object
-		var obj = {};
-
-		if (xml.nodeType == 1) { // element
-			// do attributes
-			if (xml.attributes.length > 0) {
-			obj["@attributes"] = {};
-				for (var j = 0; j < xml.attributes.length; j++) {
-					var attribute = xml.attributes.item(j);
-					obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
-				}
-			}
-		} else if (xml.nodeType == 3) { // text
-			obj = xml.nodeValue;
-		}
-
-		// do children
-		if (xml.hasChildNodes()) {
-			for(var i = 0; i < xml.childNodes.length; i++) {
-				var item = xml.childNodes.item(i);
-				var nodeName = item.nodeName;
-				if (typeof(obj[nodeName]) == "undefined") {
-					obj[nodeName] = xmlToJson(item);
-				} else {
-					if (typeof(obj[nodeName].push) == "undefined") {
-						var old = obj[nodeName];
-						obj[nodeName] = [];
-						obj[nodeName].push(old);
-					}
-					obj[nodeName].push(xmlToJson(item));
-				}
-			}
-		}
-		return obj;
-	};
 });
