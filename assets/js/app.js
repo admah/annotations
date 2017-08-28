@@ -22,11 +22,12 @@ document.addEventListener('DOMContentLoaded', function(event) {
 						
 						while (annotationNode) {
 							var charseq = annotationNode.getElementsByTagName('charseq');
+							var cat     = annotationNode.getAttribute('category');
 
 							node = {
-								'category': annotationNode.getAttribute('category'),
-								'text'    : annotationNode.textContent,
-								//'charseq'   : annotationNode.getElementsByTagName('charseq')
+								'category': cat,
+								'text'    : '<span class="' + cat + '-annotation">' + annotationNode.textContent + '</span>',
+								'charseq'   : annotationNode.getElementsByTagName('charseq')
 							}
 							annotations.add(node)
 						  	
@@ -36,7 +37,11 @@ document.addEventListener('DOMContentLoaded', function(event) {
 					  catch (e) {
 						console.log( 'Error: Document tree modified during iteration ' + e );
 					  }
-				})
+
+					  return annotations;
+				}).then(function(annotations){
+					annotationHandler.displayAnnotations(annotations);
+				});
 
 				return annotations;
 			},
@@ -45,12 +50,11 @@ document.addEventListener('DOMContentLoaded', function(event) {
 				var contentContainer = document.querySelector('.contents').innerHTML;
 				var charSeq, span, category, start;
 				var terms = [];
-				console.log(annotations.entries());
-				
-				for(annotation of annotations) {
-					console.log(annotation);
-				}
+				console.log(annotations);
 
+				annotations.forEach(function(annotation) {
+					console.log(annotation.charseq[0].getAttribute('START'));
+				});
 				/*console.log(contentContainer.replace(/alice/g, 'bob'));
 				for(annotation of annotations){
 					console.log(annotation);
@@ -96,11 +100,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
 	}
 	
 	//Get initial content and annotations
-	var annotations = annotationHandler.getAnnotations(8);
-
+	annotationHandler.getAnnotations(8);
 	getContent(8);
-
-	annotationHandler.displayAnnotations(annotations);
 		
 	// Helper function to make sure chapter has leading zeroes.
 	function sanitizeChapter(chapter) {
