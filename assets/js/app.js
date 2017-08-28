@@ -48,13 +48,18 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
 			displayAnnotations: function(annotations) {
 				var contentContainer = document.querySelector('.contents').innerHTML;
-				var charSeq, span, category, start;
-				var terms = [];
-				console.log(annotations);
+				var newContent = contentContainer;
+				var start, end;
 
 				annotations.forEach(function(annotation) {
-					console.log(annotation.charseq[0].getAttribute('START'));
+					start = annotation.charseq[0].getAttribute('START');
+					end = annotation.charseq[0].getAttribute('END');
+
+					contentContainer.innerHTML = newContent.substring(0, start) + annotation.text + newContent.substring(end, annotation.text.length);
 				});
+
+				console.log(newContent);
+
 				/*console.log(contentContainer.replace(/alice/g, 'bob'));
 				for(annotation of annotations){
 					console.log(annotation);
@@ -78,30 +83,29 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
 			removeAnnotations: function( values ){
 				return; //annotations.filter()
+			},
+
+			getContent: function( chapter ) {
+				var contentChapter = sanitizeChapter(chapter);
+				var contentRequest = new Request(location.origin + '/annotations/assets/data/ch'+ contentChapter +'.txt', {
+					headers: new Headers({
+						'Content-Type': 'text/plain'
+					})
+				});
+		
+				fetch(contentRequest).then(function(response) {
+					return response.text();
+				}).then(function(text) {
+					var contentContainer = document.querySelector('.contents');
+					contentContainer.innerHTML = text;
+				});
 			}
 		}
 	})();
-
-	// Function to request content via chapter number
-	function getContent(chapter) {
-		var contentChapter = sanitizeChapter(chapter);
-		var contentRequest = new Request(location.origin + '/annotations/assets/data/ch'+ contentChapter +'.txt', {
-			headers: new Headers({
-				'Content-Type': 'text/plain'
-			})
-		});
-
-		fetch(contentRequest).then(function(response) {
-			return response.text();
-		}).then(function(text) {
-			var contentContainer = document.querySelector('.contents');
-			contentContainer.innerHTML = text;
-		});
-	}
 	
 	//Get initial content and annotations
+	annotationHandler.getContent(8)
 	annotationHandler.getAnnotations(8);
-	getContent(8);
 		
 	// Helper function to make sure chapter has leading zeroes.
 	function sanitizeChapter(chapter) {
