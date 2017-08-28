@@ -49,30 +49,17 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
 			displayAnnotations: function(annotations) {
 				var contentContainer = document.querySelector('.contents').innerHTML;
-				var newContent, start, end;
+				var newContent, start, end, regexp;
 
 				annotations.forEach(function(annotation) {
 					start = annotation.charseq[0].getAttribute('START');
 					end = annotation.charseq[0].getAttribute('END');
+					regexp = annotation.text;
+					regexp.lastIndex = start;
 					//console.log(newContent.substring(start, annotation.textLength));
-					newContent = contentContainer.replace(annotation.text, '<span>'+ annotation.text + '</span>');
+					console.log(regexp);
+					console.log(contentContainer.textContent.match(regexp));
 				});
-
-				console.log(newContent);
-
-				document.querySelector('.contents').innerHTML = newContent;
-
-				/*console.log(contentContainer.replace(/alice/g, 'bob'));
-				for(annotation of annotations){
-					console.log(annotation);
-					category = annotation.getAttribute('category').toLowerCase();
-					charSeq = annotation.getElementsByTagName('charseq');
-					charSeqLength = charSeq[0]['textContent'].length;
-		
-					terms.push(contentContainer.substr(charSeq[0].getAttribute('START'), charSeqLength), category);
-					contentContainer.replace(/alice/g, 'bob');
-				};*/
-
 			},
 			
 			insertAnnotations: function( values ){
@@ -109,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 	
 	//Get initial content and annotations
 	annotationHandler.getContent(8);
-	//annotationHandler.getAnnotations(8);
+
 		
 	// Helper function to make sure chapter has leading zeroes.
 	function sanitizeChapter(chapter) {
