@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function(event) {
 	var annotationHandler = (function() {
-		var annotations = [];
+		var annotations = new Set();
+		var node = [];
 
 		return {
 			getAnnotations: function(chapter) {
@@ -13,11 +14,31 @@ document.addEventListener('DOMContentLoaded', function(event) {
 				}).then(function(text) {
 					var parser = new DOMParser();
 					var xmlDoc = parser.parseFromString(text, "text/xml");
-					var xmlJson = xmlToJson(xmlDoc);
-					var annotationsFromXml = xmlJson.document.span;
+					var annotationsIterator = xmlDoc.evaluate('//span', xmlDoc, null, XPathResult.ANY_TYPE, null );
+					var charseq;
 
-					annotations.push.apply(annotations,annotationsFromXml);
-				});
+					try {
+						var annotationNode = annotationsIterator.iterateNext();
+						
+						while (annotationNode) {
+							var charseq = annotationNode.getElementsByTagName('charseq');
+
+							node = {
+								'category': annotationNode.getAttribute('category'),
+								'text'    : annotationNode.textContent,
+								//'charseq'   : annotationNode.getElementsByTagName('charseq')
+							}
+							annotations.add(node)
+						  	
+						  	annotationNode = annotationsIterator.iterateNext();
+						}
+						
+						return annotations;
+					  }
+					  catch (e) {
+						console.log( 'Error: Document tree modified during iteration ' + e );
+					  }
+				})
 
 				return annotations;
 			},
@@ -26,22 +47,35 @@ document.addEventListener('DOMContentLoaded', function(event) {
 				var contentContainer = document.querySelector('.contents').innerHTML;
 				var charSeq, span, category, start;
 				var terms = [];
-				console.log(annotations);
-				for (annotation in annotations) {
+				console.log(annotations.length);
+				
+				for(annotation of annotations) {
 					console.log(annotation);
 				}
+
+				/*console.log(contentContainer.replace(/alice/g, 'bob'));
+				for(annotation of annotations){
+					console.log(annotation);
+					category = annotation.getAttribute('category').toLowerCase();
+					charSeq = annotation.getElementsByTagName('charseq');
+					charSeqLength = charSeq[0]['textContent'].length;
+		
+					terms.push(contentContainer.substr(charSeq[0].getAttribute('START'), charSeqLength), category);
+					contentContainer.replace(/alice/g, 'bob');
+				};*/
+
 			},
 			
-			insertAnnotations: function( value ){
-				return annotations.add(value);
+			insertAnnotations: function( values ){
+				return annotations.push(values);
 			},
 
 			updateAnnotations: function( values ){
 				console.log(values);
 			},
 
-			removeAnnotations: function( value ){
-				return annotations.delete(value);
+			removeAnnotations: function( values ){
+				return; //annotations.filter()
 			}
 		}
 	})();
@@ -67,8 +101,11 @@ document.addEventListener('DOMContentLoaded', function(event) {
 	var annotations = annotationHandler.getAnnotations(8);
 
 	getContent(8);
-	annotationHandler.displayAnnotations(annotations);
-	
+
+	if(annotations) {
+		annotationHandler.displayAnnotations(annotations);
+	}
+		
 	// Helper function to make sure chapter has leading zeroes.
 	function sanitizeChapter(chapter) {
 		var contentChapter = chapter ? chapter.toString() : '';
