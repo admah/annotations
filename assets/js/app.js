@@ -32,8 +32,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
 						  	
 						  	annotationNode = annotationsIterator.iterateNext();
 						}
-						
-						return annotations;
 					  }
 					  catch (e) {
 						console.log( 'Error: Document tree modified during iteration ' + e );
@@ -47,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 				var contentContainer = document.querySelector('.contents').innerHTML;
 				var charSeq, span, category, start;
 				var terms = [];
-				console.log(annotations.length);
+				console.log(annotations.entries());
 				
 				for(annotation of annotations) {
 					console.log(annotation);
@@ -102,9 +100,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
 	getContent(8);
 
-	if(annotations) {
-		annotationHandler.displayAnnotations(annotations);
-	}
+	annotationHandler.displayAnnotations(annotations);
 		
 	// Helper function to make sure chapter has leading zeroes.
 	function sanitizeChapter(chapter) {
