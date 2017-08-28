@@ -14,7 +14,7 @@ class App extends Component {
     });
 
     this.state = {
-      contentChapter: 8,
+      currentChapter: 8,
       content: null,
       annotations: null,
       categories: ['PERSON', 'LOCATION', 'ORGANIZATION'],
@@ -58,12 +58,11 @@ class App extends Component {
     }
 	}
 
-
   render() {
     return (
       <div id="app-container" className="annotations-app container">
         <ContentsList categories={this.state.categories}></ContentsList>
-        <Contents content={this.state.content}></Contents>
+        <Contents annotations={this.state.annotations} content={this.state.content}></Contents>
       </div>
     );
   }
