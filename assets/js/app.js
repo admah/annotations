@@ -1,8 +1,7 @@
 document.addEventListener('DOMContentLoaded', function(event) {
+	var annotations = new Set();
+	var node = [];
 	var annotationHandler = (function() {
-		var annotations = new Set();
-		var node = [];
-
 		return {
 			getContent: function( chapter ) {
 				var contentChapter = sanitizeChapter(chapter);
